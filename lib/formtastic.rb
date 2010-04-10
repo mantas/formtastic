@@ -9,7 +9,8 @@ module Formtastic #:nodoc:
     @@default_text_area_height = 20
     @@all_fields_required_by_default = true
     @@include_blank_for_select_by_default = true
-    @@required_string = proc { %{<abbr title="#{::Formtastic::I18n.t(:required)}">*</abbr>} }
+    # @@required_string = proc { %{<abbr title="#{::Formtastic::I18n.t(:required)}">*</abbr>} }
+    @@required_string = %{<abbr title="#{::Formtastic::I18n.t(:required)}">*</abbr>}
     @@optional_string = ''
     @@inline_errors = :sentence
     @@label_str_method = :humanize
@@ -105,7 +106,7 @@ module Formtastic #:nodoc:
         send(:"inline_#{type}_for", method, options)
       end.compact.join("\n")
 
-      return template.content_tag(:li, list_item_content, wrapper_html)
+      return template.content_tag(:li, list_item_content.html_safe, wrapper_html)
     end
 
     # Creates an input fieldset and ol tag wrapping for use around a set of inputs.  It can be
@@ -277,6 +278,8 @@ module Formtastic #:nodoc:
         
         field_set_and_list_wrapping(*((args << html_options) << contents))
       end
+      
+      nil
     end
     alias :input_field_set :inputs
 
@@ -406,7 +409,7 @@ module Formtastic #:nodoc:
       text = (options.delete(:label_prefix_for_nested_input) || "") + text
 
       input_name = options.delete(:input_name) || method
-      super(input_name, text, options)
+      super(input_name, text.html_safe, options)
     end
 
     # Generates error messages for the given method. Errors can be shown as list,
@@ -1121,7 +1124,7 @@ module Formtastic #:nodoc:
           html_options[:id] = input_id
 
           li_content = template.content_tag(:label,
-            "#{self.check_box(input_name, html_options, value, unchecked_value)} #{label}",
+            "#{self.check_box(input_name, html_options, value, unchecked_value)} #{label}".html_safe,
             :for => input_id
           )
 
@@ -1273,7 +1276,8 @@ module Formtastic #:nodoc:
         # Ruby 1.9: String#to_s behavior changed, need to make an explicit join.
         contents = contents.join if contents.respond_to?(:join)
         fieldset = template.content_tag(:fieldset,
-          legend << template.content_tag(:ol, contents),
+          # legend << template.content_tag(:ol, contents),
+          template.content_tag(:ol, contents.html_safe),
           html_options.except(:builder, :parent)
         )
 
@@ -1305,7 +1309,7 @@ module Formtastic #:nodoc:
             template.content_tag(:legend,
                 self.label(method, options_for_label(options).merge(:for => options.delete(:label_for))), :class => 'label'
               ) <<
-            template.content_tag(:ol, contents)
+            template.content_tag(:ol, contents.html_safe)
           )
       end
 
