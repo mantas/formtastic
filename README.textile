@@ -1,3 +1,5 @@
+h1. Most of my changes were merged to http://github.com/yabawock/formtastic . Looks like it's most up to date Formtastic-rails3 branch as of April 16th
+
 h1. This Formtastic's fork is more or less compatible with Rails3 beta2. Requires manual loading in initializer
 
 h1. Formtastic
